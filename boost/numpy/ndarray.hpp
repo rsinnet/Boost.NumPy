@@ -178,9 +178,10 @@ ndarray from_data_impl(void * data,
 		       bool writeable,
 		       typename boost::enable_if< boost::is_integral<typename Container::value_type> >::type * enabled = NULL)
 {
+  (void)enabled;
   std::vector<Py_intptr_t> shape_(shape.begin(),shape.end());
   std::vector<Py_intptr_t> strides_(strides.begin(), strides.end());
-  return from_data_impl(data, dt, shape_, strides_, owner, writeable);    
+  return from_data_impl(data, dt, shape_, strides_, owner, writeable);
 }
 
 ndarray from_data_impl(void * data,
