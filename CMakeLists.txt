@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.12)
+project(ros_boost_numpy)
 
-project( boost.numpy )
+find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
+  miso_common)
 
 set(BUILD_TESTS ON CACHE BOOL "Build Boost.NumPy Tests")
 set(BUILD_EXAMPLES ON CACHE BOOL "Build Boost.NumPy Examples")
@@ -24,7 +27,7 @@ ENDIF (NOT DEFINED LIB_SUFFIX)
 # configure output folders so artifacts are built into a single set of
 # top-level folders rather than the default cmake build structure that
 # matches the source tree.
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     CACHE PATH "Output directory for static libraries.")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
@@ -39,9 +42,9 @@ find_package(PythonLibs REQUIRED)
 find_package(NumPy REQUIRED)
 
 # find boost
-# 
+#
 # set(Boost_USE_STATIC_LIBS ON)
-# set(Boost_USE_MULTITHREADED ON) 
+# set(Boost_USE_MULTITHREADED ON)
 # set(Boost_USE_STATIC_RUNTIME ON)
 set(CMAKE_MACOSX_RPATH 1)
 
@@ -88,7 +91,7 @@ if(BUILD_DOCS)
     RESULT_VARIABLE SPHINX_PROCESS
     OUTPUT_VARIABLE SPHINX_VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  
+
   set(HAVE_SPHINX 0)
   if(SPHINX_PROCESS EQUAL 0)
     FIND_PROGRAM(SPHINX_BUILD sphinx-build)
@@ -101,7 +104,7 @@ if(BUILD_DOCS)
       MESSAGE(SEND_ERROR "must be able to find sphinx-build when BUILD_DOCS is enabled")
     endif()
   endif()
-  
+
   # find pdflatex, which is only required for doc-pdf
   FIND_PACKAGE(LATEX)
   if (PDFLATEX_COMPILER)
@@ -125,12 +128,18 @@ endif()
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # global settings for include paths
-include_directories(
+miso_include(
   ${PROJECT_SOURCE_DIR}
   ${PYTHON_INCLUDE_DIRS}
   ${NUMPY_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS} 
-  )
+  ${Boost_INCLUDE_DIRS}
+)
+
+catkin_package(
+  LIBRARIES boost_numpy
+  INCLUDE_DIRS ${MISO_INCLUDE_DIRS}
+  DEPENDS Boost PYTHON NUMPY
+)
 
 # install headers
 install(DIRECTORY boost
@@ -152,5 +161,3 @@ endif()
 if (BUILD_DOCS)
   ADD_SUBDIRECTORY(libs/numpy/doc)
 endif()
-
-
