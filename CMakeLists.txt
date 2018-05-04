@@ -143,11 +143,11 @@ catkin_package(
 
 # install headers
 install(DIRECTORY boost
-    DESTINATION "include"
-    FILES_MATCHING
-    PATTERN "*.hpp"
-    ${INSTALL_PERMISSIONS_SRC}
-  )
+  DESTINATION "include"
+  FILES_MATCHING
+  PATTERN "*.hpp"
+  ${INSTALL_PERMISSIONS_SRC}
+)
 
 # add submodules
 ADD_SUBDIRECTORY(libs/numpy/src)
