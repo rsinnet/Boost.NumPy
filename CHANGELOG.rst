@@ -2,8 +2,8 @@
 Changelog for package ros_boost_numpy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2018-06-13)
+------------------
 * Fixed 'catkin_make install'
 * Cleaning up package.xml.
 * Fixing a few unused variable warnings.
