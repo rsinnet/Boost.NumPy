@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ros_boost_numpy</name>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <description>A ROS package for Boost.Numpy extension</description>
   <maintainer email="ryan@rwsinnet.com">Ryan Sinnet</maintainer>
   <license>Boost Software License</license>
