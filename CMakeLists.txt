@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(ros_boost_numpy)
 
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
-  miso_common)
+  miso_catkin_cmake_modules)
 
 set(BUILD_TESTS ON CACHE BOOL "Build Boost.NumPy Tests")
 set(BUILD_EXAMPLES ON CACHE BOOL "Build Boost.NumPy Examples")
@@ -12,29 +12,29 @@ set(BUILD_EXAMPLES ON CACHE BOOL "Build Boost.NumPy Examples")
 # module search path
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/libs/numpy/cmake ${CMAKE_MODULE_PATH})
 
-IF (NOT DEFINED LIB_SUFFIX)
-	EXECUTE_PROCESS(
-		COMMAND uname -m
-		COMMAND tr -d '\n'
-		OUTPUT_VARIABLE ARCH
-	)
-	message(STATUS "Detected architecture '"  ${ARCH}  "'")
-	IF (ARCH STREQUAL x86_64)
-		SET(LIB_SUFFIX 64)
-	ENDIF (ARCH STREQUAL x86_64)
-ENDIF (NOT DEFINED LIB_SUFFIX)
+if(NOT DEFINED LIB_SUFFIX)
+  execute_process(
+    COMMAND uname -m
+    COMMAND tr -d '\n'
+    OUTPUT_VARIABLE ARCH
+    )
+  message(STATUS "Detected architecture '"  ${ARCH}  "'")
+  if(ARCH STREQUAL x86_64)
+    set(LIB_SUFFIX 64)
+  endif(ARCH STREQUAL x86_64)
+endif(NOT DEFINED LIB_SUFFIX)
 
 # configure output folders so artifacts are built into a single set of
 # top-level folders rather than the default cmake build structure that
 # matches the source tree.
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-    CACHE PATH "Output directory for static libraries.")
+  CACHE PATH "Output directory for static libraries.")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-    CACHE PATH "Output directory for shared libraries.")
+  CACHE PATH "Output directory for shared libraries.")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-    CACHE PATH "Output directory for executables and DLL's.")
+  CACHE PATH "Output directory for executables and DLL's.")
 
 # find required python packages
 find_package(PythonInterp REQUIRED)
@@ -75,7 +75,7 @@ endif()
 # add_definitions( -DBOOST_ALL_DYN_LINK )
 
 # variable controlling whether the boost_numpy is a shared or static library
-if (WIN32)
+if(WIN32)
   set(LIBRARY_TYPE STATIC CACHE STRING "type of library to make for boost_numpy")
 else()
   set(LIBRARY_TYPE SHARED CACHE STRING "type of library to make for boost_numpy")
@@ -87,27 +87,27 @@ set(BUILD_DOCS OFF CACHE BOOL "Build Boost.NumPy Documentation")
 # logic for configuring documentation generation
 if(BUILD_DOCS)
   # find sphinx
-  EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import sphinx; print sphinx.__version__"
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import sphinx; print sphinx.__version__"
     RESULT_VARIABLE SPHINX_PROCESS
     OUTPUT_VARIABLE SPHINX_VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   set(HAVE_SPHINX 0)
   if(SPHINX_PROCESS EQUAL 0)
-    FIND_PROGRAM(SPHINX_BUILD sphinx-build)
+    find_program(SPHINX_BUILD sphinx-build)
     if(SPHINX_BUILD)
       set(HAVE_SPHINX 1)
       message(STATUS "    Found Sphinx ${SPHINX_VERSION}: ${SPHINX_BUILD}")
     else()
       # sphinx is required to generate documention, so it is an error
       # if we cannot find it
-      MESSAGE(SEND_ERROR "must be able to find sphinx-build when BUILD_DOCS is enabled")
+      message(SEND_ERROR "must be able to find sphinx-build when BUILD_DOCS is enabled")
     endif()
   endif()
 
   # find pdflatex, which is only required for doc-pdf
-  FIND_PACKAGE(LATEX)
-  if (PDFLATEX_COMPILER)
+  find_package(LATEX)
+  if(PDFLATEX_COMPILER)
     message( STATUS "Found PDFLATEX_COMPILER=${PDFLATEX_COMPILER}" )
   else()
     message( STATUS "Found PDFLATEX_COMPILER NOT found" )
@@ -115,17 +115,17 @@ if(BUILD_DOCS)
 endif()
 
 # compiler definitions for non-windows builds
-if (NOT WIN32)
+if(NOT WIN32)
   add_definitions(-fPIC)
 endif()
 
-if (BUILD_TESTS)
+if(BUILD_TESTS)
   # enable ctest targets
-  ENABLE_TESTING()
+  enable_testing()
 endif()
 
 # turn on visual studio solution folders
-SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # global settings for include paths
 miso_include(
@@ -133,13 +133,14 @@ miso_include(
   ${PYTHON_INCLUDE_DIRS}
   ${NUMPY_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-)
+  )
 
 catkin_package(
   LIBRARIES boost_numpy
   INCLUDE_DIRS ${MISO_INCLUDE_DIRS}
+  CATKIN_DEPENDS miso_catkin_cmake_modules
   DEPENDS Boost PYTHON NUMPY
-)
+  )
 
 # install headers
 install(DIRECTORY boost
@@ -147,17 +148,17 @@ install(DIRECTORY boost
   FILES_MATCHING
   PATTERN "*.hpp"
   ${INSTALL_PERMISSIONS_SRC}
-)
+  )
 
 # add submodules
-ADD_SUBDIRECTORY(libs/numpy/src)
-if (BUILD_EXAMPLES)
-  ADD_SUBDIRECTORY(libs/numpy/example)
+add_subdirectory(libs/numpy/src)
+if(BUILD_EXAMPLES)
+  add_subdirectory(libs/numpy/example)
 endif()
-if (BUILD_TESTS)
-  ADD_SUBDIRECTORY(libs/numpy/test)
+if(BUILD_TESTS)
+  add_subdirectory(libs/numpy/test)
 endif()
 
-if (BUILD_DOCS)
-  ADD_SUBDIRECTORY(libs/numpy/doc)
+if(BUILD_DOCS)
+  add_subdirectory(libs/numpy/doc)
 endif()
